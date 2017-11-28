@@ -41,7 +41,7 @@
     "coverage": "./node_modules/.bin/nyc npm run test",
     "coveralls": "./node_modules/.bin/nyc npm run test; node_modules/.bin/coveralls < coverage/lcov.info",
     "postcoveralls": "rm -Rf ./coverage",
-    "prepublish": "npm run validate; npm run test; npm run build; sleep 300"
+    "prepublish": "npm run validate; npm run test; npm run build; sleep 2"
   },
   "dependencies": {
     "@types/is": "0.0.17",
