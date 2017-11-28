@@ -15,28 +15,55 @@ export class Configuration {
     return this;
   }
 
-  writeCollection(path: string, value: t_conf | any): this {
-    return this;
+  write(path: string, value: t_conf | any): this {
+    return this.__traverse(path, value, `write`);
   }
 
-  write(path: string, value: t_conf | string): this {
+  define(path: string, type: any | string): this {
+    return this.__traverse(path, type, `define`);
+  }
+
+  private __traverse(path: string, v: any, method: string): this {
+    const isNestingObject = this.__isNestingObject(v);
+    const _this = this as any;
+
+    if (isNestingObject) {
+      for (const k in v) {
+        const _path = (isType.array(v)) ? `${path}[${k}]` : `${path}.${k}`;
+        const _v = v[k];
+
+        _this[method](_path, _v);
+      }
+    }
+    else {
+      _this[`_${method}`](path, v);
+    }
+
+    return this;
+
+  }
+
+  _write(path: string, value: t_conf | string): this {
     const typeSteps = this._steps(this.__parsePathGlobIndex(path));
     const typeInflectionPoint = typeSteps.pop() as string;
     const typeParent = this._getPath(this._type, typeSteps);
 
-    // if no type information, then cannot store
-    if (!typeParent) {
+    if (isType.object(value) || isType.array(value)) {
       return this;
+    }
+
+    if (!typeParent) {
+      throw new TypeError(`${typeSteps.join('.')} is invalid.`);
     }
 
     const typeDefinition: string = typeParent[typeInflectionPoint];
 
     if (!typeDefinition) {
-      return this;
+      throw new TypeError(`${path} is invalid at ${JSON.stringify(typeInflectionPoint)}.`);
     }
 
-    if (!this._isPermitted(typeDefinition, value)) {
-      return this;
+    if (!this._isPermitted(typeDefinition, value, path)) {
+      throw new TypeError(`${path} matches an invalid type at ${JSON.stringify(typeDefinition)}.`);
     }
 
     const steps = this._steps(this.__parsePath(path));
@@ -55,7 +82,7 @@ export class Configuration {
     return this._getPath(this._conf, this._steps(this.__parsePath(path)));
   }
 
-  define(path: string, type: t_conf | string, options?: Object): this {
+  _define(path: string, type: t_conf | string): this {
     const steps = this._steps(this.__parsePathGlobIndex(path));
     const inflectionPoint = steps.pop() as string;
     const typeParent = this._createPath(this._type, steps);
@@ -64,14 +91,9 @@ export class Configuration {
     return this;
   }
 
-  protected _isPermitted(_type: string, value: any): boolean {
+  protected _isPermitted(_type: string, value: any, path: string): boolean {
     const isFn: is_fn = (isType as any)[_type] as is_fn;
-
-    if (!isFn) {
-      throw new Error(`${_type} is not a supported type.`);
-    }
-
-    return isFn.call(isType, value);
+    return (isFn) ? isFn.call(isType, value) : false;
   }
 
   /**
@@ -87,7 +109,6 @@ export class Configuration {
     }
 
     for (let step of steps) {
-      let _step: any = step;
       const isNumeric = this.__isNumericStep(step);
 
       if (isNumeric) {
@@ -161,6 +182,10 @@ export class Configuration {
 
   private __isNumericStep(step: string): boolean {
     return !!step && step[step.length - 1] === '!';
+  }
+
+  private __isNestingObject(o: any): boolean {
+    return isType.array(o) || (isType.object(o) && o.constructor.name === `Object`);
   }
 
 }
