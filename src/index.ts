@@ -14,6 +14,8 @@ export class Configuration {
   protected _conf: t_conf_object = {};
   protected _type: t_conf_object = {};
 
+  private __issues: string[] = [];
+
   /**
    * baseline the configuration
    */
@@ -53,10 +55,7 @@ export class Configuration {
    * @param value
    */
   write(path: string, value: t_conf | any) {
-    const issues = this.__trackIssues();
-    this.__traverse(path, value, `write`, issues);
-
-    return this.__reportIssues(issues);
+    return this.__traverse(path, value, `write`);
   }
 
   /**
@@ -65,10 +64,7 @@ export class Configuration {
    * @param type
    */
   define(path: string, type: any | string | is_fn_custom) {
-    const issues = this.__trackIssues();
-    this.__traverse(path, type, `define`, issues);
-
-    return this.__reportIssues(issues);
+    return this.__traverse(path, type, `define`);
   }
 
   /**
@@ -78,49 +74,56 @@ export class Configuration {
    * @param method either `define` or `write` which both traverse configuration trees
    * @param issues all issues accrued during traversal
    */
-  private __traverse(path: string, v: any, method: string, issues: string[]) {
+  private __traverse(path: string, v: any, method: string): this {
     const isNestingObject = this.__isNestingObject(v);
 
     if (isNestingObject) {
       for (const k in v) {
-        const _path = (isType.array(v)) ? `${path}[${k}]` : `${path}.${k}`;
+        const _path = (!path) ? `${k}` : ((isType.array(v)) ? `${path}[${k}]` : `${path}.${k}`);
 
-        this.__traverse(_path, v[k], method, issues);
+        this.__traverse(_path, v[k], method);
       }
     }
     else {
       const _this = this as any;
 
-      _this[`_${method}`](path, v, issues);
+      _this[`_${method}`](path, v);
     }
+
+    return this;
   }
 
   /**
    * Write a single value in to an leaf-path
    */
-  protected _write(path: string, value: t_conf | string, issues: string[]): this {
+  protected _write(path: string, value: t_conf | string): this {
     const typeSteps = this._steps(this.__parsePathGlobIndex(path));
     const typeInflectionPoint = typeSteps.pop() as string;
     const typeParent = this._getPath(this._type, typeSteps);
 
-    if (isType.object(value) || isType.array(value)) {
+    if (isType.undefined(value)) {
+      this.__issues.push(`${typeSteps.join('.')} will not accept undefined as a value.`);
+      return this;
+    }
+    else if (isType.object(value) || isType.array(value)) {
+      // NOTE this is a developer error if you look at __traverse
       return this;
     }
 
     if (!typeParent) {
-      issues.push(`${typeSteps.join('.')} is invalid.`);
+      this.__issues.push(`${typeSteps.join('.')} is invalid.`);
       return this;
     }
 
     const typeDefinition: string = typeParent[typeInflectionPoint];
 
     if (!typeDefinition) {
-      issues.push(`${path} is invalid at ${JSON.stringify(typeInflectionPoint)}.`);
+      this.__issues.push(`${path} is invalid at ${JSON.stringify(typeInflectionPoint)}.`);
       return this;
     }
 
     if (!this._isPermitted(typeDefinition, value)) {
-      issues.push(`${path} matches an invalid type at ${JSON.stringify(typeDefinition)}.`);
+      this.__issues.push(`${path} matches an invalid type at ${JSON.stringify(typeDefinition)}.`);
       return this;
     }
 
@@ -222,17 +225,17 @@ export class Configuration {
     return ptr;
   }
 
-  /**
-   * Start the issues list for a write or define
-   */
-  private __trackIssues(): string[] {
-    return [];
+  isOk(): boolean {
+    return this.__issues.length > 0;
   }
 
   /**
    * @return resolved if there are no issues, otherwise return the issues in a catch
    */
-  private __reportIssues(issues: string[]): Promise<string[]> {
+  issues(): Promise<string[]> {
+    const issues = this.__cloneIssues();
+
+    this.__clearIssues();
     return new Promise(function (resolve, reject) {
       if (issues.length > 0) {
         reject(issues);
@@ -241,6 +244,21 @@ export class Configuration {
         resolve();
       }
     });
+  }
+
+  /**
+   * Start the issues list for a write or define
+   */
+  private __cloneIssues(): string[] {
+    return this.__issues.slice(0);
+  }
+
+  /**
+   * Start the issues list for a write or define
+   */
+  private __clearIssues(): this {
+    this.__issues = [];
+    return this;
   }
 
   /**

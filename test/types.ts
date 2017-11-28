@@ -167,7 +167,7 @@ test.cb('Read Single Path Value', function (t: any) {
 test.cb('Define Type Objects', function (t: any) {
   const c = new ConfigurationTest();
 
-  t.plan(5);
+  t.plan(8);
 
   c.clear();
   c.define(`a`, {
@@ -206,6 +206,19 @@ test.cb('Define Type Objects', function (t: any) {
   t.is(c.type.a.b.c.d, 'number', `nested define to d`);
   t.is(c.type.a.b.e.q.a, 'string', `nested define to q.a`);
   t.is(c.type.a.b.e.q.b, 'string', `nested define to q.b`);
+
+  c.clear();
+  c.define('', {
+    username: 'string',
+    author: {
+      firstname: 'string',
+      lastname: 'string'
+    }
+  });
+  console.log(JSON.stringify(c.type));
+  t.is(c.type.username, 'string', `an empty path is the root`);
+  t.is(c.type.author.firstname, 'string', `author defines nesting (firstname)`);
+  t.is(c.type.author.lastname, 'string', `author defines nesting (lastname)`);
 
   t.end();
 });
@@ -313,7 +326,7 @@ test('Write/Read Report Errors (2)', function (t: any) {
   c.define('a.b.c', 'number');
 
   return new Promise((resolve) => {
-    c.write('a.b', 1).catch((issues) => {
+    c.write('a.b', 1).issues().catch((issues) => {
       t.is(issues[0], 'a.b matches an invalid type at {"c":"number"}.', 'error because too short');
       resolve();
     });
@@ -331,7 +344,7 @@ test('Write/Read Report Errors (3)', function (t: any) {
   c.define('a.b.c', 'number');
 
   return new Promise((resolve) => {
-    return c.write('a.b.c.d', 1).catch((issues) => {
+    return c.write('a.b.c.d', 1).issues().catch((issues) => {
       t.is(issues[0], 'a.b.c.d is invalid at "d".', 'error because too long');
       resolve();
     });
@@ -345,15 +358,15 @@ test('Custom Type', function (t: any) {
   t.plan(2);
 
   c.clear();
-  c.define(`a.b`, (v: number, isType: Is, _c: ConfigurationTest) => {
-    return isType.number(v) && v > 8;
+  c.define(`a.b`, (v: number, _isType: Is, _c: ConfigurationTest) => {
+    return _isType.number(v) && v > 8;
   });
 
   return new Promise((resolve) => {
-    c.write(`a.b`, 2).catch(() => {
+    c.write(`a.b`, 2).issues().catch(() => {
       t.is(c.conf.a, undefined, `assignment does not meet custom requirements`);
 
-      c.write(`a.b`, 12).then(() => {
+      c.write(`a.b`, 12).issues().then(() => {
         t.is(c.conf.a.b, 12, `assignment meets requirements: number and > 8`)
         resolve();
       });
