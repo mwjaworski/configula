@@ -2,6 +2,7 @@ const isType: Is = require('is_js');
 
 type t_conf = Object;
 type t_conf_object = any;
+type is_fn = (v: any) => boolean;
 
 export class Configuration {
 
@@ -28,33 +29,30 @@ export class Configuration {
       return this;
     }
 
-    const typeDefinition = typeParent[typeInflectionPoint];
+    const typeDefinition: string = typeParent[typeInflectionPoint];
 
     if (!typeDefinition) {
       return this;
     }
 
-    // if (!this._isPermitted(typeDefinition, value)) {
-    //   return this;
-    // }
+    if (!this._isPermitted(typeDefinition, value)) {
+      return this;
+    }
 
     const steps = this._steps(this.__parsePath(path));
-    const inflectionPoint = typeSteps.pop() as string;
-    const getParent = this._createPath(this._conf, steps);
+    const inflectionPoint = steps.pop() as string;
+    const valueParent = this._createPath(this._conf, steps);
 
-    getParent[inflectionPoint] = value;
+    valueParent[inflectionPoint] = value;
     return this;
   }
 
-  read(path: string) {
-    const steps = this._steps(this.__parsePath(path));
-    const inflectionPoint = steps.pop() as string;
-
-    return !!this._getPath(this._conf, steps);
+  has(path: string): boolean {
+    return !!this.read(path);
   }
 
-  has(path: string): boolean {
-    return this._has(this._conf, path);
+  read(path: string) {
+    return this._getPath(this._conf, this._steps(this.__parsePath(path)));
   }
 
   define(path: string, type: t_conf | string, options?: Object): this {
@@ -66,15 +64,14 @@ export class Configuration {
     return this;
   }
 
-  protected _has(root: t_conf_object, path: string): boolean {
-    const steps = this._steps(this.__parsePath(path));
-    const inflectionPoint = steps.pop() as string;
+  protected _isPermitted(_type: string, value: any): boolean {
+    const isFn: is_fn = (isType as any)[_type] as is_fn;
 
-    return !!this._getPath(root, steps);
-  }
+    if (!isFn) {
+      throw new Error(`${_type} is not a supported type.`);
+    }
 
-  protected _isPermitted(type: t_conf, value: any): boolean {
-    return isType.email(value);
+    return isFn.call(isType, value);
   }
 
   /**
@@ -134,10 +131,6 @@ export class Configuration {
     }
 
     return ptr;
-  }
-
-  private __defineContainer(root: t_conf_object, path: string) {
-
   }
 
   /**

@@ -11,6 +11,9 @@ export class ConfigurationTest extends Configuration {
   get type() {
     return this._type;
   }
+  get conf() {
+    return this._conf;
+  }
 }
 
 test.cb('Create Path', function (t: any): void {
@@ -95,6 +98,66 @@ test.cb('Define Path & Type', function (t: any): void {
   c.initialize();
   c.define(`a.b.c[*].d`, 'number');
   t.is(c.type.a.b.c[0].d, 'number', `number at an index`);
+
+  t.end();
+});
+
+test.cb('Write Single Path Value', function (t: any): void {
+  const c = new ConfigurationTest();
+
+  t.plan(5);
+
+  c.initialize();
+  c.define(`a.b.c.d`, 'number');
+  c.write(`a.b.c.d`, 2);
+  t.is(c.conf.a.b.c.d, 2, `assign a number in embedded objects`);
+
+  c.initialize();
+  c.define(`a`, 'number');
+  c.write(`a`, 2);
+  t.is(c.conf.a, 2, `assign a number to one key`);
+
+  c.initialize();
+  c.define(``, 'number');
+  c.write(``, 2);
+  t.is(c.conf[''], 2, `assign a number to the base object`);
+
+  c.initialize();
+  c.define(`a.b.c[*].d`, 'number');
+  c.write(`a.b.c[1].d`, 2);
+  c.write(`a.b.c[4].d`, 2);
+  t.is(c.conf.a.b.c[1].d, 2, `assign a number in an array index(1)`);
+  t.is(c.conf.a.b.c[4].d, 2, `assign a number in an array index(4)`);
+
+  t.end();
+});
+
+test.cb('Read Single Path Value', function (t: any): void {
+  const c = new ConfigurationTest();
+
+  t.plan(5);
+
+  c.initialize();
+  c.define(`a.b.c.d`, 'number');
+  c.write(`a.b.c.d`, 2);
+  t.is(c.read(`a.b.c.d`), 2, `read a number in embedded objects`);
+
+  c.initialize();
+  c.define(`a`, 'number');
+  c.write(`a`, 2);
+  t.is(c.read('a'), 2, `read a number to one key`);
+
+  c.initialize();
+  c.define(``, 'number');
+  c.write(``, 2);
+  t.is(c.read(''), 2, `read a number to the base object`);
+
+  c.initialize();
+  c.define(`a.b.c[*].d`, 'number');
+  c.write(`a.b.c[1].d`, 2);
+  c.write(`a.b.c[4].d`, 2);
+  t.is(c.read('a.b.c[1].d'), 2, `read a number in an array index(1)`);
+  t.is(c.read('a.b.c[4].d'), 2, `read a number in an array index(4)`);
 
   t.end();
 });
