@@ -1,5 +1,6 @@
 {
   "name": "rule-conf",
+  "version": "0.2.0",
   "description": "A rule-typed configuration object",
   "main": "src/index.ts",
   "authors": [
