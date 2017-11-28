@@ -1,5 +1,5 @@
-# RuleConf Changelog
+# rule-conf
 
 ## 0.1.0
 
-- ADDED
+- Initial Release
