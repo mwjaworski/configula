@@ -1,0 +1,30 @@
+{
+  "name": "rule-conf",
+  "description": "A rule-typed configuration object",
+  "main": "src/index.ts",
+  "authors": [
+    {
+      "name": "Michael Jaworski",
+      "url": "https://github.com/mwjaworski"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "configuration",
+    "rules"
+  ],
+  "homepage": "https://github.com/mwjaworski/rule-conf",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "reports",
+    "test",
+    "tests",
+    "/.*",
+    "/*.bkp"
+  ],
+  "dependencies": {
+    "is_js": "^0.9.0"
+  }
+}

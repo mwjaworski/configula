@@ -6,7 +6,8 @@
 [![npm version](https://badge.fury.io/js/rule-conf.svg)](https://badge.fury.io/js/rule-conf)
 [![Changelog Status](https://changelogs.md/img/changelog-check-green.svg)](https://changelogs.md/github/mwjaworski/rule-conf/)
 
-> ...
+> A rule-typed configuration object
+
 
 
 ## License

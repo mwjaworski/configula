@@ -11,8 +11,8 @@
 .vault/
 .history/
 
-/vendor/
-/node_modules/
-/reports/
-/coverage/
-/.tmp/
+bower_components/
+node_modules/
+reports/
+coverage/
+.tmp/
