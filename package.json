@@ -1,0 +1,90 @@
+{
+  "name": "rule-conf",
+  "description": "...",
+  "version": "0.1.0",
+  "homepage": "https://github.com/mwjaworski/rule-conf",
+  "author": {
+    "name": "Michael Jaworski",
+    "url": "https://github.com/mwjaworski"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mwjaworski/rule-conf.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mwjaworski/rule-conf/issues"
+  },
+  "license": "MIT",
+  "keywords": [],
+  "preferGlobal": true,
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=6.5.0"
+  },
+  "ignore": [
+    "node_modules",
+    "reports",
+    "test",
+    "/.*",
+    "/*.js",
+    "/*.json",
+    "/*.yml",
+    "/*.bkp"
+  ],
+  "scripts": {
+    "validate": "node_modules/.bin/standard --fix bin/**/*.js test/**/*.js",
+    "build": "node_modules/.bin/tsc",
+    "pretest": "rm -Rf .tmp/test/",
+    "test": "node_modules/.bin/tsc -p test && node_modules/.bin/ava --timeout=3s .tmp/ava/test/*.js",
+    "coverage": "./node_modules/.bin/nyc npm run test",
+    "coveralls": "./node_modules/.bin/nyc npm run test; node_modules/.bin/coveralls < coverage/lcov.info",
+    "postcoveralls": "rm -Rf ./coverage"
+  },
+  "dependencies": {
+    "@types/is": "0.0.17",
+    "@types/requirejs": "^2.1.31",
+    "ava": "^0.23.0",
+    "is_js": "^0.9.0",
+    "tslib": "^1.8.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.2"
+  },
+  "devDependencies": {
+    "@types/assertion-error": "^1.0.30",
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.42",
+    "@types/sinon": "^2.3.4",
+    "ava": "^0.23.0",
+    "coveralls": "*",
+    "nyc": "^11.3.0",
+    "tslib": "^1.8.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.5.3"
+  },
+  "ava": {
+    "files": [
+      "bin/**/*.js"
+    ],
+    "source": [
+      "bin/**/*.js"
+    ],
+    "failWithoutAssertions": true,
+    "powerAssert": false,
+    "concurrency": 5,
+    "failFast": true,
+    "tap": true
+  },
+  "nyc": {
+    "check-coverage": true,
+    "include": [
+      "bin/**/*.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "cache": true,
+    "all": true,
+    "report-dir": "./coverage"
+  }
+}
