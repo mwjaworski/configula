@@ -9,6 +9,7 @@ var Configuration = /** @class */ (function () {
     function Configuration() {
         this._conf = {};
         this._type = {};
+        this.__issues = [];
     }
     /**
      * baseline the configuration
@@ -45,9 +46,7 @@ var Configuration = /** @class */ (function () {
      * @param value
      */
     Configuration.prototype.write = function (path, value) {
-        var issues = this.__trackIssues();
-        this.__traverse(path, value, "write", issues);
-        return this.__reportIssues(issues);
+        return this.__traverse(path, value, "write");
     };
     /**
      *
@@ -55,9 +54,7 @@ var Configuration = /** @class */ (function () {
      * @param type
      */
     Configuration.prototype.define = function (path, type) {
-        var issues = this.__trackIssues();
-        this.__traverse(path, type, "define", issues);
-        return this.__reportIssues(issues);
+        return this.__traverse(path, type, "define");
     };
     /**
      * Call write for every leaf in the path
@@ -66,40 +63,46 @@ var Configuration = /** @class */ (function () {
      * @param method either `define` or `write` which both traverse configuration trees
      * @param issues all issues accrued during traversal
      */
-    Configuration.prototype.__traverse = function (path, v, method, issues) {
+    Configuration.prototype.__traverse = function (path, v, method) {
         var isNestingObject = this.__isNestingObject(v);
         if (isNestingObject) {
             for (var k in v) {
-                var _path = (isType.array(v)) ? path + "[" + k + "]" : path + "." + k;
-                this.__traverse(_path, v[k], method, issues);
+                var _path = (!path) ? "" + k : ((isType.array(v)) ? path + "[" + k + "]" : path + "." + k);
+                this.__traverse(_path, v[k], method);
             }
         }
         else {
             var _this = this;
-            _this["_" + method](path, v, issues);
+            _this["_" + method](path, v);
         }
+        return this;
     };
     /**
      * Write a single value in to an leaf-path
      */
-    Configuration.prototype._write = function (path, value, issues) {
+    Configuration.prototype._write = function (path, value) {
         var typeSteps = this._steps(this.__parsePathGlobIndex(path));
         var typeInflectionPoint = typeSteps.pop();
         var typeParent = this._getPath(this._type, typeSteps);
-        if (isType.object(value) || isType.array(value)) {
+        if (isType.undefined(value)) {
+            this.__issues.push(typeSteps.join('.') + " will not accept undefined as a value.");
+            return this;
+        }
+        else if (isType.object(value) || isType.array(value)) {
+            // NOTE this is a developer error if you look at __traverse
             return this;
         }
         if (!typeParent) {
-            issues.push(typeSteps.join('.') + " is invalid.");
+            this.__issues.push(typeSteps.join('.') + " is invalid.");
             return this;
         }
         var typeDefinition = typeParent[typeInflectionPoint];
         if (!typeDefinition) {
-            issues.push(path + " is invalid at " + JSON.stringify(typeInflectionPoint) + ".");
+            this.__issues.push(path + " is invalid at " + JSON.stringify(typeInflectionPoint) + ".");
             return this;
         }
         if (!this._isPermitted(typeDefinition, value)) {
-            issues.push(path + " matches an invalid type at " + JSON.stringify(typeDefinition) + ".");
+            this.__issues.push(path + " matches an invalid type at " + JSON.stringify(typeDefinition) + ".");
             return this;
         }
         var steps = this._steps(this.__parsePath(path));
@@ -181,16 +184,15 @@ var Configuration = /** @class */ (function () {
         }
         return ptr;
     };
-    /**
-     * Start the issues list for a write or define
-     */
-    Configuration.prototype.__trackIssues = function () {
-        return [];
+    Configuration.prototype.isOk = function () {
+        return this.__issues.length > 0;
     };
     /**
      * @return resolved if there are no issues, otherwise return the issues in a catch
      */
-    Configuration.prototype.__reportIssues = function (issues) {
+    Configuration.prototype.issues = function () {
+        var issues = this.__cloneIssues();
+        this.__clearIssues();
         return new Promise(function (resolve, reject) {
             if (issues.length > 0) {
                 reject(issues);
@@ -199,6 +201,19 @@ var Configuration = /** @class */ (function () {
                 resolve();
             }
         });
+    };
+    /**
+     * Start the issues list for a write or define
+     */
+    Configuration.prototype.__cloneIssues = function () {
+        return this.__issues.slice(0);
+    };
+    /**
+     * Start the issues list for a write or define
+     */
+    Configuration.prototype.__clearIssues = function () {
+        this.__issues = [];
+        return this;
     };
     /**
      * @param path a query in to the configuration (. for object keys, !.<index> for array index)
