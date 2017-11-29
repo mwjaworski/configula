@@ -42,11 +42,35 @@ export class Configula {
   }
 
   /**
-   *
    * @param path a query in to the configuration (. to separate objects, [] to search arrays)
+   * @return a cloned portion of the configuration
+   * @see Configula#read
    */
-  read(path: string) {
-    return this._getPath(this._conf, this._steps(this.__parsePath(path)));
+  clone(path?: string) {
+    return Configula.__clone(this.read(path));
+  }
+
+  /**
+   * @param o any object
+   * @returns a deep clone or the original object, if the deep clone fails
+   */
+  private static __clone(o: any) {
+    try {
+      return JSON.parse(JSON.stringify(o));
+    }
+    catch (e) {
+      return o;
+    }
+  }
+
+  /**
+   * @param path a query in to the configuration (. to separate objects, [] to search arrays)
+   * @return a portion of the configuration
+   */
+  read(path?: string) {
+    return (path !== undefined)
+      ? this._getPath(this._conf, this._steps(this.__parsePath(path)))
+      : this._conf;
   }
 
   /**
@@ -105,8 +129,8 @@ export class Configula {
       this.__issues.push(`${typeSteps.join('.')} will not accept undefined as a value.`);
       return this;
     }
-    else if (isType.object(value) || isType.array(value)) {
-      // NOTE this is a developer error if you look at __traverse
+    else if (this.__isNestingObject(value)) {
+      this.__issues.push(`${typeSteps.join('.')} should store simple values.`);
       return this;
     }
 
@@ -226,7 +250,7 @@ export class Configula {
   }
 
   isOk(): boolean {
-    return this.__issues.length > 0;
+    return this.__issues.length <= 0;
   }
 
   /**

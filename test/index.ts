@@ -18,7 +18,7 @@ export class ConfigulaTest extends Configula {
   }
 }
 
-test.cb('Create Path', function (t: any) {
+test('Create Path', function (t: any) {
   const c = new ConfigulaTest();
 
   t.plan(6);
@@ -45,10 +45,9 @@ test.cb('Create Path', function (t: any) {
   t.is(r4.a.e[1], undefined, `index 1 is undefined`);
   t.is(r4.a.e[2], t4, `index 2 was set to {} from the path`);
 
-  t.end();
 });
 
-test.cb('Get Path', function (t: any) {
+test('Get Path', function (t: any) {
   const c = new ConfigulaTest();
 
   t.plan(8);
@@ -81,10 +80,9 @@ test.cb('Get Path', function (t: any) {
   t.is(r4.a.b[1], t4, `t4; matches an object at index 1`);
   t.is(r4.a.b[1], _t4, `_t4; matches an object at index 1`);
 
-  t.end();
 });
 
-test.cb('Define Path & Type', function (t: any) {
+test('Define Path & Type', function (t: any) {
   const c = new ConfigulaTest();
 
   t.plan(3);
@@ -101,10 +99,9 @@ test.cb('Define Path & Type', function (t: any) {
   c.define(`a.b.c[*].d`, 'number');
   t.is(c.type.a.b.c[0].d, 'number', `number at an index`);
 
-  t.end();
 });
 
-test.cb('Write Single Path Value', function (t: any) {
+test('Write Single Path Value', function (t: any) {
   const c = new ConfigulaTest();
 
   t.plan(5);
@@ -131,7 +128,6 @@ test.cb('Write Single Path Value', function (t: any) {
   t.is(c.conf.a.b.c[1].d, 2, `assign a number in an array index(1)`);
   t.is(c.conf.a.b.c[4].d, 2, `assign a number in an array index(4)`);
 
-  t.end();
 });
 
 test.cb('Read Single Path Value', function (t: any) {
@@ -162,6 +158,37 @@ test.cb('Read Single Path Value', function (t: any) {
   t.is(c.read('a.b.c[4].d'), 2, `read a number in an array index(4)`);
 
   t.end();
+});
+
+test('Read All', function (t: any) {
+  const c = new ConfigulaTest();
+  const o = new Date();
+
+  t.plan(11);
+
+  c.clear();
+  c.define(`a.b.c.d`, 'number');
+  c.define(`a.e`, 'date');
+
+  c.write(`a.b.c.d`, 2);
+  c.write(`a.e`, o);
+
+  t.is(c.isOk(), true, 'both writes succeeded');
+
+  t.is(c.read('a.b.c.d'), 2, `Read to a value`);
+  t.is(c.read(`a.b`).c.d, 2, `Read to an internal node`);
+  t.is(c.read().a.b.c.d, 2, `Read the entire object`);
+
+  t.is(c.clone('a.b.c.d'), 2, `Read to a value`);
+  t.is(c.clone(`a.b`).c.d, 2, `Read to an internal node`);
+  t.is(c.clone().a.b.c.d, 2, `Read the entire object`);
+
+
+  t.is(c.read('a.e'), o, `1`);
+  t.deepEqual(c.read('a.e'), o, `2`);
+  t.not(c.clone(`a.e`), o, `3`);
+  t.deepEqual(c.clone('a.e'), JSON.parse(JSON.stringify(o)), `4`);
+
 });
 
 test.cb('Define Type Objects', function (t: any) {
@@ -215,7 +242,6 @@ test.cb('Define Type Objects', function (t: any) {
       lastname: 'string'
     }
   });
-  console.log(JSON.stringify(c.type));
   t.is(c.type.username, 'string', `an empty path is the root`);
   t.is(c.type.author.firstname, 'string', `author defines nesting (firstname)`);
   t.is(c.type.author.lastname, 'string', `author defines nesting (lastname)`);
