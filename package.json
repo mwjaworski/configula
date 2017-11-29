@@ -1,7 +1,7 @@
 {
   "name": "configula",
   "description": "A rule-typed configuration object",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/mwjaworski/configula",
   "author": {
     "name": "Michael Jaworski",
@@ -15,7 +15,11 @@
     "url": "https://github.com/mwjaworski/configula/issues"
   },
   "license": "MIT",
-  "keywords": [],
+  "keywords": [
+    "configuration",
+    "configure",
+    "manifest"
+  ],
   "preferGlobal": true,
   "main": "src/index.ts",
   "engines": {
