@@ -1,7 +1,7 @@
 {
   "name": "configula",
   "description": "Conqueror of the validating-configuration solutions",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "homepage": "https://github.com/mwjaworski/configula",
   "author": {
     "name": "Michael Jaworski",

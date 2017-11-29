@@ -1,4 +1,8 @@
-const isType: Is = require('is_js');
+/// <reference path="../types/is.d.ts" />
+
+import * as isLib from 'is_js';
+const is: Is = isLib;
+
 
 type t_conf = Object;
 type t_conf_object = any;
@@ -135,7 +139,7 @@ export class Configula implements IConfigula {
 
     if (isNestingObject) {
       for (const k in v) {
-        const _path = (!path) ? `${k}` : ((isType.array(v)) ? `${path}[${k}]` : `${path}.${k}`);
+        const _path = (!path) ? `${k}` : ((is.array(v)) ? `${path}[${k}]` : `${path}.${k}`);
 
         this.__traverse(_path, v[k], method);
       }
@@ -157,7 +161,7 @@ export class Configula implements IConfigula {
     const typeInflectionPoint = typeSteps.pop() as string;
     const typeParent = this._getPath(this._type, typeSteps);
 
-    if (isType.undefined(value)) {
+    if (is.undefined(value)) {
       this.__issues.push(`${typeSteps.join('.')} will not accept undefined as a value.`);
       return this;
     }
@@ -211,10 +215,10 @@ export class Configula implements IConfigula {
    */
   protected _isPermitted(_type: is_fn_custom | string, value: any): boolean {
     if (typeof _type === 'function') {
-      return _type(value, isType, this);
+      return _type(value, is, this);
     }
     else if (typeof _type === 'string') {
-      return ((isType as any)[_type] as is_fn).call(isType, value);
+      return ((is as any)[_type] as is_fn).call(is, value);
     }
     else {
       return false;
@@ -337,7 +341,7 @@ export class Configula implements IConfigula {
    * ```
    */
   private __isNestingObject(o: any): boolean {
-    return isType.array(o) || (isType.object(o) && o.constructor.name === `Object`);
+    return is.array(o) || (is.object(o) && o.constructor.name === `Object`);
   }
 
 }

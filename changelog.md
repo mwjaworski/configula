@@ -1,5 +1,11 @@
 # Configula
 
+## 0.2.4
+
+- FIXED the import of is.js so that we know the type as `'is_js'`. The type requirements are local now, but will be included in TypeDefinitions soon
+
+> Do not use bin/ because a commonjs build tool is needed to get the require out
+
 ## 0.2.3
 
 - ADDED `IConfigula` so projects can interact with Configula but not include the source

@@ -1,4 +1,7 @@
-const isType: Is = require('is_js');
+/// <reference path="../types/is.d.ts" />
+
+import * as isLib from 'is_js';
+const is: Is = isLib;
 
 import { Configula } from '../src/index';
 import test from 'ava';
