@@ -1,4 +1,8 @@
-# configula
+# Configula
+
+## 0.1.2
+
+- FIXED excluding configuration files from npm deploys
 
 ## 0.1.1
 

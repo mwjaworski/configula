@@ -14,4 +14,11 @@ bower_components/
 node_modules/
 reports/
 coverage/
+notes/
+test/
 .tmp/
+
+/.*
+/*.yml
+/*.bkp
+/*.json
