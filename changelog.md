@@ -1,5 +1,9 @@
 # Configula
 
+## 0.2.3
+
+- ADDED `IConfigula` so projects can interact with Configula but not include the source
+
 ## 0.2.2
 
 - FIXED build status icon

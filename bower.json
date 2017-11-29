@@ -1,6 +1,6 @@
 {
   "name": "configula",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Conqueror of the validating-configuration solutions",
   "main": "src/index.ts",
   "authors": [

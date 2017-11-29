@@ -5,55 +5,101 @@ type t_conf_object = any;
 type is_fn = (v: any) => boolean;
 type is_fn_custom = (v: any, is: Is, configuration: Configula) => boolean;
 
+export interface IConfigula {
+  /**
+   * baseline the configuration
+   */
+  clear(): void;
+  /**
+   * clear the configuration data, but keep the definition
+   */
+  empty(): void;
+  /**
+   * @return true if there are issues
+   */
+  isOk(): boolean;
+  /**
+   * @return resolved if there are no issues, otherwise return the issues in a catch
+   */
+  issues(): Promise<string[]>;
+  /**
+   * Does a path store a value in the configuration
+   * @param path a query in to the configuration (. to separate objects, [] to search arrays)
+   * @return true if a value exists (not undefined) in the configuration
+   */
+  has(path: string): boolean;
+  /**
+   * @param path a query in to the configuration (. to separate objects, [] to search arrays)
+   * @return a cloned portion of the configuration
+   * @see Configula#read
+   */
+  clone(path?: string): t_conf_object;
+  /**
+   * @param path a query in to the configuration (. to separate objects, [] to search arrays)
+   * @return a portion of the configuration
+   */
+  read(path?: string): t_conf_object;
+  /**
+   *
+   * @param path a query in to the configuration (. to separate objects, [] to search arrays)
+   * @param value
+   */
+  write(path: string, value: t_conf | any): this;
+  /**
+   *
+   * @param path a query in to the configuration (. to separate objects, [*] to define arrays)
+   * @param type
+   */
+  define(path: string, type: any | string | is_fn_custom): this;
+}
+
 /**
  * Represents a single configuration where every stored key must have a defined type. Type determination is decided by is.js or a custom function which is provided the is.js object.
  * @see is_js
  */
-export class Configula {
+export class Configula implements IConfigula {
 
   protected _conf: t_conf_object = {};
   protected _type: t_conf_object = {};
 
   private __issues: string[] = [];
 
-  /**
-   * baseline the configuration
-   */
   clear() {
     this._type = {};
     return this.empty();
   }
 
-  /**
-   * clear the configuration data, but keep the definition
-   */
   empty() {
     this._conf = {};
     return this;
   }
 
-  /**
-   * Does a path store a value in the configuration
-   * @param path a query in to the configuration (. to separate objects, [] to search arrays)
-   * @return true if a value exists (not undefined) in the configuration
-   */
+  isOk(): boolean {
+    return this.__issues.length <= 0;
+  }
+
+  issues(): Promise<string[]> {
+    const issues = this.__cloneIssues();
+
+    this.__clearIssues();
+    return new Promise(function (resolve, reject) {
+      if (issues.length > 0) {
+        reject(issues);
+      }
+      else {
+        resolve();
+      }
+    });
+  }
+
   has(path: string): boolean {
     return this.read(path) !== undefined;
   }
 
-  /**
-   * @param path a query in to the configuration (. to separate objects, [] to search arrays)
-   * @return a cloned portion of the configuration
-   * @see Configula#read
-   */
   clone(path?: string) {
     return Configula.__clone(this.read(path));
   }
 
-  /**
-   * @param o any object
-   * @returns a deep clone or the original object, if the deep clone fails
-   */
   private static __clone(o: any) {
     try {
       return JSON.parse(JSON.stringify(o));
@@ -63,30 +109,16 @@ export class Configula {
     }
   }
 
-  /**
-   * @param path a query in to the configuration (. to separate objects, [] to search arrays)
-   * @return a portion of the configuration
-   */
   read(path?: string) {
     return (path !== undefined)
       ? this._getPath(this._conf, this._steps(this.__parsePath(path)))
       : this._conf;
   }
 
-  /**
-   *
-   * @param path a query in to the configuration (. to separate objects, [] to search arrays)
-   * @param value
-   */
   write(path: string, value: t_conf | any) {
     return this.__traverse(path, value, `write`);
   }
 
-  /**
-   *
-   * @param path a query in to the configuration (. to separate objects, [*] to define arrays)
-   * @param type
-   */
   define(path: string, type: any | string | is_fn_custom) {
     return this.__traverse(path, type, `define`);
   }
@@ -247,27 +279,6 @@ export class Configula {
     }
 
     return ptr;
-  }
-
-  isOk(): boolean {
-    return this.__issues.length <= 0;
-  }
-
-  /**
-   * @return resolved if there are no issues, otherwise return the issues in a catch
-   */
-  issues(): Promise<string[]> {
-    const issues = this.__cloneIssues();
-
-    this.__clearIssues();
-    return new Promise(function (resolve, reject) {
-      if (issues.length > 0) {
-        reject(issues);
-      }
-      else {
-        resolve();
-      }
-    });
   }
 
   /**
