@@ -1,27 +1,27 @@
 ```typescript
-Configuration.write(`t.g.e[0].c`, {
+Configula.write(`t.g.e[0].c`, {
   d: 'q',
   f: {
     c: 2
   }
 })
-Configuration.write(`t.g.e[0].c.d`, 'q')
+Configula.write(`t.g.e[0].c.d`, 'q')
 
-Configuration.define(`t.g.e[0].*`, {
+Configula.define(`t.g.e[0].*`, {
   is: 'number'
 })
-Configuration.define(`t.g.e[0].*`, {
+Configula.define(`t.g.e[0].*`, {
   f: 'number',
   w: 'string',
   r: {
     g: 'date'
   }
 })
-Configuration.define(`t.g.e[0].f`, 'number')
-Configuration.define(`t.g.e[0].w`, 'number')
-Configuration.define(`t.g.e[0].r.g`, 'date')
+Configula.define(`t.g.e[0].f`, 'number')
+Configula.define(`t.g.e[0].w`, 'number')
+Configula.define(`t.g.e[0].r.g`, 'date')
 
-Configuration.read(`t.g.e.0.c`)
+Configula.read(`t.g.e.0.c`)
 ```
 
 ```typescript

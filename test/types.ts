@@ -1,9 +1,9 @@
 const isType: Is = require('is_js');
 
-import { Configuration } from '../src/index';
+import { Configula } from '../src/index';
 import test from 'ava';
 
-export class ConfigurationTest extends Configuration {
+export class ConfigulaTest extends Configula {
   getPath(root: any, steps: string[]) {
     return this._getPath(root, steps);
   }
@@ -19,7 +19,7 @@ export class ConfigurationTest extends Configuration {
 }
 
 test.cb('Create Path', function (t: any) {
-  const c = new ConfigurationTest();
+  const c = new ConfigulaTest();
 
   t.plan(6);
 
@@ -49,7 +49,7 @@ test.cb('Create Path', function (t: any) {
 });
 
 test.cb('Get Path', function (t: any) {
-  const c = new ConfigurationTest();
+  const c = new ConfigulaTest();
 
   t.plan(8);
 
@@ -85,7 +85,7 @@ test.cb('Get Path', function (t: any) {
 });
 
 test.cb('Define Path & Type', function (t: any) {
-  const c = new ConfigurationTest();
+  const c = new ConfigulaTest();
 
   t.plan(3);
 
@@ -105,7 +105,7 @@ test.cb('Define Path & Type', function (t: any) {
 });
 
 test.cb('Write Single Path Value', function (t: any) {
-  const c = new ConfigurationTest();
+  const c = new ConfigulaTest();
 
   t.plan(5);
 
@@ -135,7 +135,7 @@ test.cb('Write Single Path Value', function (t: any) {
 });
 
 test.cb('Read Single Path Value', function (t: any) {
-  const c = new ConfigurationTest();
+  const c = new ConfigulaTest();
 
   t.plan(5);
 
@@ -165,7 +165,7 @@ test.cb('Read Single Path Value', function (t: any) {
 });
 
 test.cb('Define Type Objects', function (t: any) {
-  const c = new ConfigurationTest();
+  const c = new ConfigulaTest();
 
   t.plan(8);
 
@@ -224,7 +224,7 @@ test.cb('Define Type Objects', function (t: any) {
 });
 
 test.cb('Write Type Objects', function (t: any) {
-  const c = new ConfigurationTest();
+  const c = new ConfigulaTest();
 
   t.plan(7);
 
@@ -303,7 +303,7 @@ test.cb('Write Type Objects', function (t: any) {
 });
 
 test.cb('Write/Read Report Errors (1)', function (t: any) {
-  const c = new ConfigurationTest();
+  const c = new ConfigulaTest();
 
   t.plan(1);
 
@@ -318,7 +318,7 @@ test.cb('Write/Read Report Errors (1)', function (t: any) {
 });
 
 test('Write/Read Report Errors (2)', function (t: any) {
-  const c = new ConfigurationTest();
+  const c = new ConfigulaTest();
 
   t.plan(1);
 
@@ -336,7 +336,7 @@ test('Write/Read Report Errors (2)', function (t: any) {
 
 
 test('Write/Read Report Errors (3)', function (t: any) {
-  const c = new ConfigurationTest();
+  const c = new ConfigulaTest();
 
   t.plan(1);
 
@@ -353,12 +353,12 @@ test('Write/Read Report Errors (3)', function (t: any) {
 });
 
 test('Custom Type', function (t: any) {
-  const c = new ConfigurationTest();
+  const c = new ConfigulaTest();
 
   t.plan(2);
 
   c.clear();
-  c.define(`a.b`, (v: number, _isType: Is, _c: ConfigurationTest) => {
+  c.define(`a.b`, (v: number, _isType: Is, _c: ConfigulaTest) => {
     return _isType.number(v) && v > 8;
   });
 

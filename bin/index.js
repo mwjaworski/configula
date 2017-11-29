@@ -5,8 +5,8 @@ var isType = require('is_js');
  * Represents a single configuration where every stored key must have a defined type. Type determination is decided by is.js or a custom function which is provided the is.js object.
  * @see is_js
  */
-var Configuration = /** @class */ (function () {
-    function Configuration() {
+var Configula = /** @class */ (function () {
+    function Configula() {
         this._conf = {};
         this._type = {};
         this.__issues = [];
@@ -14,14 +14,14 @@ var Configuration = /** @class */ (function () {
     /**
      * baseline the configuration
      */
-    Configuration.prototype.clear = function () {
+    Configula.prototype.clear = function () {
         this._type = {};
         return this.empty();
     };
     /**
      * clear the configuration data, but keep the definition
      */
-    Configuration.prototype.empty = function () {
+    Configula.prototype.empty = function () {
         this._conf = {};
         return this;
     };
@@ -30,14 +30,14 @@ var Configuration = /** @class */ (function () {
      * @param path a query in to the configuration (. to separate objects, [] to search arrays)
      * @return true if a value exists (not undefined) in the configuration
      */
-    Configuration.prototype.has = function (path) {
+    Configula.prototype.has = function (path) {
         return this.read(path) !== undefined;
     };
     /**
      *
      * @param path a query in to the configuration (. to separate objects, [] to search arrays)
      */
-    Configuration.prototype.read = function (path) {
+    Configula.prototype.read = function (path) {
         return this._getPath(this._conf, this._steps(this.__parsePath(path)));
     };
     /**
@@ -45,7 +45,7 @@ var Configuration = /** @class */ (function () {
      * @param path a query in to the configuration (. to separate objects, [] to search arrays)
      * @param value
      */
-    Configuration.prototype.write = function (path, value) {
+    Configula.prototype.write = function (path, value) {
         return this.__traverse(path, value, "write");
     };
     /**
@@ -53,7 +53,7 @@ var Configuration = /** @class */ (function () {
      * @param path a query in to the configuration (. to separate objects, [*] to define arrays)
      * @param type
      */
-    Configuration.prototype.define = function (path, type) {
+    Configula.prototype.define = function (path, type) {
         return this.__traverse(path, type, "define");
     };
     /**
@@ -63,7 +63,7 @@ var Configuration = /** @class */ (function () {
      * @param method either `define` or `write` which both traverse configuration trees
      * @param issues all issues accrued during traversal
      */
-    Configuration.prototype.__traverse = function (path, v, method) {
+    Configula.prototype.__traverse = function (path, v, method) {
         var isNestingObject = this.__isNestingObject(v);
         if (isNestingObject) {
             for (var k in v) {
@@ -80,7 +80,7 @@ var Configuration = /** @class */ (function () {
     /**
      * Write a single value in to an leaf-path
      */
-    Configuration.prototype._write = function (path, value) {
+    Configula.prototype._write = function (path, value) {
         var typeSteps = this._steps(this.__parsePathGlobIndex(path));
         var typeInflectionPoint = typeSteps.pop();
         var typeParent = this._getPath(this._type, typeSteps);
@@ -114,7 +114,7 @@ var Configuration = /** @class */ (function () {
     /**
      * Write a type definition in to an leaf-path
      */
-    Configuration.prototype._define = function (path, type, issues) {
+    Configula.prototype._define = function (path, type, issues) {
         var steps = this._steps(this.__parsePathGlobIndex(path));
         var inflectionPoint = steps.pop();
         var typeParent = this._createPath(this._type, steps);
@@ -127,7 +127,7 @@ var Configuration = /** @class */ (function () {
      * @param value the value to type-check
      * @return true if type-check permits the value
      */
-    Configuration.prototype._isPermitted = function (_type, value) {
+    Configula.prototype._isPermitted = function (_type, value) {
         if (typeof _type === 'function') {
             return _type(value, isType, this);
         }
@@ -143,7 +143,7 @@ var Configuration = /** @class */ (function () {
      * @param root the top-level object to traverse
      * @param steps the path as an array of steps
      */
-    Configuration.prototype._getPath = function (root, steps) {
+    Configula.prototype._getPath = function (root, steps) {
         var ptr = root;
         if (!ptr) {
             return undefined;
@@ -166,7 +166,7 @@ var Configuration = /** @class */ (function () {
      * @param root the top-level object to traverse
      * @param steps the path as an array of steps
      */
-    Configuration.prototype._createPath = function (root, steps) {
+    Configula.prototype._createPath = function (root, steps) {
         var ptr = root;
         if (!ptr) {
             return undefined;
@@ -184,13 +184,13 @@ var Configuration = /** @class */ (function () {
         }
         return ptr;
     };
-    Configuration.prototype.isOk = function () {
+    Configula.prototype.isOk = function () {
         return this.__issues.length > 0;
     };
     /**
      * @return resolved if there are no issues, otherwise return the issues in a catch
      */
-    Configuration.prototype.issues = function () {
+    Configula.prototype.issues = function () {
         var issues = this.__cloneIssues();
         this.__clearIssues();
         return new Promise(function (resolve, reject) {
@@ -205,13 +205,13 @@ var Configuration = /** @class */ (function () {
     /**
      * Start the issues list for a write or define
      */
-    Configuration.prototype.__cloneIssues = function () {
+    Configula.prototype.__cloneIssues = function () {
         return this.__issues.slice(0);
     };
     /**
      * Start the issues list for a write or define
      */
-    Configuration.prototype.__clearIssues = function () {
+    Configula.prototype.__clearIssues = function () {
         this.__issues = [];
         return this;
     };
@@ -219,19 +219,19 @@ var Configuration = /** @class */ (function () {
      * @param path a query in to the configuration (. for object keys, !.<index> for array index)
      * @return an array of paths
      */
-    Configuration.prototype._steps = function (path) {
+    Configula.prototype._steps = function (path) {
         return path.split(".");
     };
     /**
      * @param path a query in to the configuration (array indices are converted to an internal object/array notation, so `[V]` => `!.V` so the `!`)
      */
-    Configuration.prototype.__parsePath = function (path) {
+    Configula.prototype.__parsePath = function (path) {
         return path.replace("[", "!.").replace("]", "");
     };
     /**
      * @param path a query in to the configuration (array indices are converted to `[0]` so we store array rules at index 0 and apply to all elements). This allows us to represent arrays in the conf and type trees the same (as an array) which keeps the traversal code the same
      */
-    Configuration.prototype.__parsePathGlobIndex = function (path) {
+    Configula.prototype.__parsePathGlobIndex = function (path) {
         var findBrackets = /\[([^\]]+)\]/g;
         var zeroIndexPath = path.replace(findBrackets, "[0]");
         return this.__parsePath(zeroIndexPath);
@@ -240,7 +240,7 @@ var Configuration = /** @class */ (function () {
      * @param step a single descending path in the tree
      * @return true if the path is an array index
      */
-    Configuration.prototype.__isNumericStep = function (step) {
+    Configula.prototype.__isNumericStep = function (step) {
         return !!step && step[step.length - 1] === '!';
     };
     /**
@@ -250,10 +250,10 @@ var Configuration = /** @class */ (function () {
      * write('a.b', { c: { value: 1 } }) IS_IDENTICAL_TO write('a.b.c.value', 1)
      * ```
      */
-    Configuration.prototype.__isNestingObject = function (o) {
+    Configula.prototype.__isNestingObject = function (o) {
         return isType.array(o) || (isType.object(o) && o.constructor.name === "Object");
     };
-    return Configuration;
+    return Configula;
 }());
-exports.Configuration = Configuration;
+exports.Configula = Configula;
 //# sourceMappingURL=index.js.map

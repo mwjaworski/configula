@@ -3,13 +3,13 @@ const isType: Is = require('is_js');
 type t_conf = Object;
 type t_conf_object = any;
 type is_fn = (v: any) => boolean;
-type is_fn_custom = (v: any, is: Is, configuration: Configuration) => boolean;
+type is_fn_custom = (v: any, is: Is, configuration: Configula) => boolean;
 
 /**
  * Represents a single configuration where every stored key must have a defined type. Type determination is decided by is.js or a custom function which is provided the is.js object.
  * @see is_js
  */
-export class Configuration {
+export class Configula {
 
   protected _conf: t_conf_object = {};
   protected _type: t_conf_object = {};

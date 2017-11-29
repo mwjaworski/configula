@@ -1,10 +1,10 @@
-# rule-conf
+# configula
 
-[![Build Status](https://img.shields.io/badge/rule--conf-available-green.svg)](https://www.npmjs.com/package/rule-conf)
-[![Build Status](https://travis-ci.org/mwjaworski/rule-conf.svg?branch=docs-and-testing)](https://travis-ci.org/mwjaworski/rule-conf)
-[![Coverage Status](https://coveralls.io/repos/github/mwjaworski/rule-conf/badge.svg?branch=master)](https://coveralls.io/github/mwjaworski/rule-conf?branch=master)
-[![npm version](https://badge.fury.io/js/rule-conf.svg)](https://badge.fury.io/js/rule-conf)
-[![Changelog Status](https://changelogs.md/img/changelog-check-green.svg)](https://changelogs.md/github/mwjaworski/rule-conf/)
+[![Build Status](https://img.shields.io/badge/configula-available-green.svg)](https://www.npmjs.com/package/configula)
+[![Build Status](https://travis-ci.org/mwjaworski/configula.svg?branch=docs-and-testing)](https://travis-ci.org/mwjaworski/configula)
+[![Coverage Status](https://coveralls.io/repos/github/mwjaworski/configula/badge.svg?branch=master)](https://coveralls.io/github/mwjaworski/configula?branch=master)
+[![npm version](https://badge.fury.io/js/configula.svg)](https://badge.fury.io/js/configula)
+[![Changelog Status](https://changelogs.md/img/changelog-check-green.svg)](https://changelogs.md/github/mwjaworski/configula/)
 
 > A rule-typed configuration object
 
@@ -13,7 +13,7 @@ An application's configuration should be closely monitored for defective values 
 A configuration will define it's shape and type with `define`.
 
 ```typescript
-const conf = new Configuration();
+const conf = new Configula();
 
 // define configuration paths by key
 conf
@@ -53,7 +53,7 @@ conf.write('', {
 Writes may fail if the path does not match a pre-defined path/type. There are two ways to detect failure.
 
 ```typescript
-const conf = new Configuration();
+const conf = new Configula();
 
 // === false
 const didSucceed = conf
@@ -75,7 +75,7 @@ conf
 You can read information from the configuration. The value `undefined` always means that there is no value, or you can use `has`. The `write` method will not accept `undefined` as a value and will result in an issue being registered.
 
 ```typescript
-const conf = new Configuration();
+const conf = new Configula();
 
 // `read` returns the value because it is not `undefined` and matches the type
 conf
@@ -99,13 +99,13 @@ conf
 It may be necessary to define more complex rules than type matching. You can deliver custom type matching functions in the `define` call.
 
 ```typescript
-import { Configuration } from 'rule-conf';
+import { Configula } from 'configula';
 
 const isType: Is = require('is_js');
-const conf = new Configuration();
+const conf = new Configula();
 
 // `read` returns the value because it is not `undefined` and matches the type
-conf.define('pill', (pill: any, isType: Is, configuration: Configuration) => {
+conf.define('pill', (pill: any, isType: Is, configuration: Configula) => {
   return isType.string(pill) && (pill === 'red' || pill === 'blue');
 });
 
@@ -123,4 +123,4 @@ conf
 ## License
 
 MIT. Copyright (c) 2017-10-11 [Michael Jaworski](https://github.com/mwjaworski).
-rule-conf is an [OPEN Open Source Project](http://openopensource.org/).
+configula is an [OPEN Open Source Project](http://openopensource.org/).

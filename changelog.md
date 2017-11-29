@@ -1,4 +1,4 @@
-# rule-conf
+# configula
 
 ## 0.2.0
 

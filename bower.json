@@ -1,6 +1,6 @@
 {
-  "name": "rule-conf",
-  "version": "0.2.0",
+  "name": "configula",
+  "version": "0.1.0",
   "description": "A rule-typed configuration object",
   "main": "src/index.ts",
   "authors": [
@@ -14,7 +14,7 @@
     "configuration",
     "rules"
   ],
-  "homepage": "https://github.com/mwjaworski/rule-conf",
+  "homepage": "https://github.com/mwjaworski/configula",
   "ignore": [
     "**/.*",
     "node_modules",
