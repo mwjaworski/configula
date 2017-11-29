@@ -1,5 +1,9 @@
 # Configula
 
+## 0.2.2
+
+- FIXED build status icon
+
 ## 0.2.1
 
 - FIXED npm configuration, this does not `preferGlobal` it is for a project
