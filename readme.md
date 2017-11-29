@@ -1,7 +1,7 @@
 # Configula
 
 [![Build Status](https://img.shields.io/badge/configula-available-green.svg)](https://www.npmjs.com/package/configula)
-[![Build Status](https://travis-ci.org/mwjaworski/configula.svg?branch=docs-and-testing)](https://travis-ci.org/mwjaworski/configula)
+[![Build Status](https://travis-ci.org/mwjaworski/configula.svg?branch=master)](https://travis-ci.org/mwjaworski/configula)
 [![Coverage Status](https://coveralls.io/repos/github/mwjaworski/configula/badge.svg?branch=master)](https://coveralls.io/github/mwjaworski/configula?branch=master)
 [![npm version](https://badge.fury.io/js/configula.svg)](https://badge.fury.io/js/configula)
 [![Changelog Status](https://changelogs.md/img/changelog-check-green.svg)](https://changelogs.md/github/mwjaworski/configula/)
