@@ -1,7 +1,7 @@
 {
   "name": "configula",
   "description": "Conqueror of the validating-configuration solutions",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/mwjaworski/configula",
   "author": {
     "name": "Michael Jaworski",
@@ -20,7 +20,7 @@
     "configure",
     "manifest"
   ],
-  "preferGlobal": true,
+  "preferGlobal": false,
   "main": "src/index.ts",
   "engines": {
     "node": ">=6.5.0"
