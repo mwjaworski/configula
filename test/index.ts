@@ -1,8 +1,4 @@
-/// <reference path="../types/is.d.ts" />
-
-import * as isLib from 'is_js';
-const is: Is = isLib;
-
+import { TSType } from './../src/ts_type';
 import { Configula } from '../src/index';
 import test from 'ava';
 
@@ -387,8 +383,8 @@ test('Custom Type', function (t: any) {
   t.plan(2);
 
   c.clear();
-  c.define(`a.b`, (v: number, _isType: Is, _c: ConfigulaTest) => {
-    return _isType.number(v) && v > 8;
+  c.define(`a.b`, (v: number, tst: TSType, _c: ConfigulaTest) => {
+    return tst.number(v) && v > 8;
   });
 
   return new Promise((resolve) => {

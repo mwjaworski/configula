@@ -1,5 +1,12 @@
 # Configula
 
+## 0.3.0
+
+- ADDED `Of` for type-checking to replace is_js
+- ADDED `Configula(type_checker?)` ability to replace default `Of` type-checking
+- ADDED support for constant-literal or regular expression in type check
+- REMOVED is_js as a dependency
+
 ## 0.2.4
 
 - FIXED the import of is.js so that we know the type as `'is_js'`. The type requirements are local now, but will be included in TypeDefinitions soon
