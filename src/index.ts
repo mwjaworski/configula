@@ -145,9 +145,7 @@ export class Configula implements IConfigula {
       }
     }
     else {
-      const _this = this as any;
-
-      _this[`_${method}`](path, v);
+      (this as any)[`_${method}`](path, v);
     }
 
     return this;
