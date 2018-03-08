@@ -58,15 +58,12 @@ export interface IConfigula {
  *
  */
 export class Configula implements IConfigula {
-
   protected _conf: t_conf_object = {};
   protected _type: t_conf_object = {};
 
   private __issues: string[] = [];
 
-  constructor(private __of: any | TSType = tst) {
-
-  }
+  constructor(private __of: any | TSType = tst) {}
 
   clear() {
     this._type = {};
@@ -86,11 +83,10 @@ export class Configula implements IConfigula {
     const issues = this.__cloneIssues();
 
     this.__clearIssues();
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
       if (issues.length > 0) {
         reject(issues);
-      }
-      else {
+      } else {
         resolve();
       }
     });
@@ -107,16 +103,13 @@ export class Configula implements IConfigula {
   private static __clone(o: any) {
     try {
       return JSON.parse(JSON.stringify(o));
-    }
-    catch (e) {
+    } catch (e) {
       return o;
     }
   }
 
   read(path?: string) {
-    return (path !== undefined)
-      ? this._getPath(this._conf, this._steps(this.__parsePath(path)))
-      : this._conf;
+    return path !== undefined ? this._getPath(this._conf, this._steps(this.__parsePath(path))) : this._conf;
   }
 
   write(path: string, value: t_conf | any) {
@@ -139,12 +132,11 @@ export class Configula implements IConfigula {
 
     if (isNestingObject) {
       for (const k in v) {
-        const _path = (!path) ? `${k}` : ((Array.isArray(v)) ? `${path}[${k}]` : `${path}.${k}`);
+        const _path = !path ? `${k}` : Array.isArray(v) ? `${path}[${k}]` : `${path}.${k}`;
 
         this.__traverse(_path, v[k], method);
       }
-    }
-    else {
+    } else {
       (this as any)[`_${method}`](path, v);
     }
 
@@ -162,8 +154,7 @@ export class Configula implements IConfigula {
     if (tst.undefined(value)) {
       this.__issues.push(`${typeSteps.join('.')} will not accept undefined as a value.`);
       return this;
-    }
-    else if (this.__isNestingObject(value)) {
+    } else if (this.__isNestingObject(value)) {
       this.__issues.push(`${typeSteps.join('.')} should store simple values.`);
       return this;
     }
@@ -220,17 +211,13 @@ export class Configula implements IConfigula {
   protected _isPermitted(_type: type_fn_custom | any | RegExp, value: any): boolean {
     if (_type === value) {
       return true;
-    }
-    else if (tst.function(_type)) {
+    } else if (tst.function(_type)) {
       return _type(value, this.__of, this);
-    }
-    else if (tst.string(value) && tst.regExp(_type)) {
+    } else if (tst.string(value) && tst.regExp(_type)) {
       return (value + '').match(_type) !== null;
-    }
-    else if (tst.string(_type) && this.__of[_type]) {
+    } else if (tst.string(_type) && this.__of[_type]) {
       return ((this.__of as any)[_type] as type_fn).call(this.__of, value);
-    }
-    else {
+    } else {
       return false;
     }
   }
@@ -286,7 +273,7 @@ export class Configula implements IConfigula {
       }
 
       if (!ptr[step]) {
-        ptr[step] = (isNumeric) ? [] : {};
+        ptr[step] = isNumeric ? [] : {};
       }
 
       ptr = ptr[step];
@@ -352,7 +339,18 @@ export class Configula implements IConfigula {
    * ```
    */
   private __isNestingObject(o: any): boolean {
-    return tst.array(o) || tst.object(o);
-  }
+    if (tst.object(o)) {
+      return true;
+    } else if (!tst.array(o)) {
+      return false;
+    }
 
+    for (let key in o) {
+      if (tst.object(o[key])) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }

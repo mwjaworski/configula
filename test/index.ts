@@ -39,7 +39,7 @@ test('Create Path', function (t: any) {
 
   c.clear();
   const r4 = {} as any;
-  const t4 = c.createPath(r4, ['a', 'e!', '2'])
+  const t4 = c.createPath(r4, ['a', 'e!', '2']);
   t.is(r4.a.e.length, 3, `index 2 of an array created undefined for 0 and 1`);
   t.is(r4.a.e[1], undefined, `index 1 is undefined`);
   t.is(r4.a.e[2], t4, `index 2 was set to {} from the path`);

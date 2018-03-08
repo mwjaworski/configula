@@ -1,5 +1,9 @@
 # Configula
 
+## 0.3.1
+
+- FIXED an object or an array with object is a nesting object, all other containers are type definitions
+
 ## 0.3.0
 
 - ADDED `Of` for type-checking to replace is_js
